@@ -190,15 +190,45 @@ fip_Series = pd.Series(fip_asst_ordered)
 new_df = pd.concat([df,fip_Series],axis=1,verify_integrity=True) #add FIPS column
 new_df.columns = ['Dam/Levee Break','Drought','Earthquake','Fire','Flood','Other','Storm','Tsunami','Water','Winter','FIPS']
 
-##Isolate subsets of each disaster type
+##Isolate subsets of each disaster type and ensure correct dtype for plotly object
 
 dam_subset = new_df[['Dam/Levee Break','FIPS']]
 dam_subset.loc[:,'FIPS'] = dam_subset.loc[:,'FIPS'].astype(str)
 dam_subset.loc[:,'Dam/Levee Break'] = dam_subset.loc[:,'Dam/Levee Break'].astype(float)
 
+drought_subset = new_df[['Drought','FIPS']]
+drought_subset.loc[:,'FIPS'] = drought_subset.loc[:,'FIPS'].astype(str)
+drought_subset.loc[:,'Drought'] = drought_subset.loc[:,'Drought'].astype(float)
+
+quake_subset = new_df[['Earthquake','FIPS']]
+quake_subset.loc[:,'FIPS'] = quake_subset.loc[:,'FIPS'].astype(str)
+quake_subset.loc[:,'Earthquake'] = quake_subset.loc[:,'Earthquake'].astype(float)
+
+fire_subset = new_df[['Fire','FIPS']]
+fire_subset.loc[:,'FIPS'] = fire_subset.loc[:,'FIPS'].astype(str)
+fire_subset.loc[:,'Fire'] = fire_subset.loc[:,'Fire'].astype(float)
+
 flood_subset = new_df[['Flood','FIPS']]
 flood_subset.loc[:,'FIPS'] = flood_subset.loc[:,'FIPS'].astype(str) #convert to string
 flood_subset.loc[:,'Flood'] = flood_subset.loc[:,'Flood'].astype(float) #Convert to float for continuous color scale
+
+##Ignore 'Other' classification
+
+storm_subset = new_df[['Storm','FIPS']]
+storm_subset.loc[:,'FIPS'] = storm_subset.loc[:,'FIPS'].astype(str)
+storm_subset.loc[:,'Storm'] = storm_subset.loc[:,'Storm'].astype(float)
+
+tsunami_subset = new_df[['Tsunami','FIPS']]
+tsunami_subset.loc[:,'FIPS'] = tsunami_subset.loc[:,'FIPS'].astype(str)
+tsunami_subset.loc[:,'Tsunami'] = tsunami_subset.loc[:,'Tsunami'].astype(float)
+
+water_subset = new_df[['Water','FIPS']]
+water_subset.loc[:,'FIPS'] = water_subset.loc[:,'FIPS'].astype(str)
+water_subset.loc[:,'Water'] = water_subset.loc[:,'Water'].astype(float)
+
+winter_subset = new_df[['Winer','FIPS']]
+winter_subset.loc[:,'FIPS'] = winter_subset.loc[:,'FIPS'].astype(str)
+winter_subset.loc[:,'Winter'] = winter_subset.loc[:,'Winter'].astype(float)
 
 ##plotting with Plotly
 
@@ -206,22 +236,24 @@ flood_subset.loc[:,'Flood'] = flood_subset.loc[:,'Flood'].astype(float) #Convert
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
     counties = json.load(response) #for entire country
 
+num_plots = len(new_df.columns)-1
+
 #creat plotly figure object
-fig = px.choropleth(flood_subset, geojson=counties, locations='FIPS', color='Flood',
+fig = px.choropleth(storm_subset, geojson=counties, locations='FIPS', color='Storm',
                     color_continuous_scale="Viridis",
                     range_color=(1,11),
-                    labels={'Flood':'Occurences'}
+                    labels={'Storm':'Occurences'}
                     )
 
 #Add title and scale layout
 fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
-                  height=800,
-                  title_text = 'Major Flood Occurences Since 1953')
+                  height=720,
+                  title_text = 'Major Storm Occurences Since 1953')
 
 fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
 #fig.show() #uncomment in order to see the figure
 
-path = r'C:\Users\liamw\PycharmProjects\California\FloodMap.html'
+path = r'C:\Users\liamw\PycharmProjects\California\StormMap.html'
 fig.write_html(path) #save as interactive '.html'
 
 ##Produce 'Dash' app
