@@ -194,7 +194,7 @@ new_df.columns = ['Dam/Levee Break','Drought','Earthquake','Fire','Flood','Other
 
 dam_subset = new_df[['Dam/Levee Break','FIPS']]
 dam_subset.loc[:,'FIPS'] = dam_subset.loc[:,'FIPS'].astype(str)
-dam_subset.loc[:,'Dam/Levee Break'] = dam_subset.loc[:,'Dam.Levee Break'].astype(float)
+dam_subset.loc[:,'Dam/Levee Break'] = dam_subset.loc[:,'Dam/Levee Break'].astype(float)
 
 flood_subset = new_df[['Flood','FIPS']]
 flood_subset.loc[:,'FIPS'] = flood_subset.loc[:,'FIPS'].astype(str) #convert to string
