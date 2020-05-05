@@ -227,12 +227,6 @@ app.layout = html.Div([
 
 app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
 
-
-
-
-
-
-
 time2 = time.time()
 toc = abs(time2-time1)
 print("\nProcessing took {time} seconds".format(time=round(toc,3)))
