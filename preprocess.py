@@ -214,7 +214,8 @@ fig = px.choropleth(flood_subset, geojson=counties, locations='FIPS', color='Flo
                     )
 
 #Add title and scale layout
-fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0},
+fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
+                  height=800,
                   title_text = 'Major Flood Occurences Since 1953')
 
 fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
