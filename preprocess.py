@@ -191,9 +191,14 @@ new_df = pd.concat([df,fip_Series],axis=1,verify_integrity=True) #add FIPS colum
 new_df.columns = ['Dam/Levee Break','Drought','Earthquake','Fire','Flood','Other','Storm','Tsunami','Water','Winter','FIPS']
 
 ##Isolate subsets of each disaster type
+
+dam_subset = new_df[['Dam/Levee Break','FIPS']]
+dam_subset.loc[:,'FIPS'] = dam_subset.loc[:,'FIPS'].astype(str)
+dam_subset.loc[:,'Dam/Levee Break'] = dam_subset.loc[:,'Dam.Levee Break'].astype(float)
+
 flood_subset = new_df[['Flood','FIPS']]
-flood_subset['FIPS'] = flood_subset['FIPS'].astype(str)
-flood_subset['Flood'] = flood_subset['Flood'].astype(float)
+flood_subset.loc[:,'FIPS'] = flood_subset.loc[:,'FIPS'].astype(str) #convert to string
+flood_subset.loc[:,'Flood'] = flood_subset.loc[:,'Flood'].astype(float) #Convert to float for continuous color scale
 
 ##plotting with Plotly
 
