@@ -238,22 +238,23 @@ fig = px.choropleth(flood_subset, geojson=counties, locations='FIPS', color='Flo
                     range_color=(1,11),
                     labels={'Flood':'Occurences'}
                     )
-fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-fig.update_layout(title_text = 'Major Flood Occurences Since 1953')
+fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0},
+                  title_text = 'Major Flood Occurences Since 1953')
+#fig.update_layout(title_text = 'Major Flood Occurences Since 1953')
 fig.update_geos(fitbounds="locations", visible=False)
-fig.show()
+#fig.show()
 path = r'C:\Users\liamw\PycharmProjects\California\FloodMap.html'
 fig.write_html(path)
 
 ##Uncomment to produce 'Dash' app
-'''
+
 app = dash.Dash()
 app.layout = html.Div([
     dcc.Graph(figure=fig)
 ])
 
 app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
-'''
+
 
 
 
