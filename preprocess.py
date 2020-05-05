@@ -211,12 +211,14 @@ fire_subset.loc[:,'Fire'] = fire_subset.loc[:,'Fire'].astype(float)
 flood_subset = new_df[['Flood','FIPS']]
 flood_subset.loc[:,'FIPS'] = flood_subset.loc[:,'FIPS'].astype(str) #convert to string
 flood_subset.loc[:,'Flood'] = flood_subset.loc[:,'Flood'].astype(float) #Convert to float for continuous color scale
+flood_range = (1,11)
 
 ##Ignore 'Other' classification
 
 storm_subset = new_df[['Storm','FIPS']]
 storm_subset.loc[:,'FIPS'] = storm_subset.loc[:,'FIPS'].astype(str)
 storm_subset.loc[:,'Storm'] = storm_subset.loc[:,'Storm'].astype(float)
+storm_range = (1,8)
 
 tsunami_subset = new_df[['Tsunami','FIPS']]
 tsunami_subset.loc[:,'FIPS'] = tsunami_subset.loc[:,'FIPS'].astype(str)
@@ -241,7 +243,7 @@ num_plots = len(new_df.columns)-1
 #creat plotly figure object
 fig = px.choropleth(storm_subset, geojson=counties, locations='FIPS', color='Storm',
                     color_continuous_scale="Viridis",
-                    range_color=(1,11),
+                    range_color=storm_range,
                     labels={'Storm':'Occurences'}
                     )
 
@@ -268,4 +270,5 @@ app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Ju
 time2 = time.time()
 toc = abs(time2-time1)
 print("\nProcessing took {time} seconds".format(time=round(toc,3)))
+
 
