@@ -226,7 +226,7 @@ water_subset = new_df[['Water','FIPS']]
 water_subset.loc[:,'FIPS'] = water_subset.loc[:,'FIPS'].astype(str)
 water_subset.loc[:,'Water'] = water_subset.loc[:,'Water'].astype(float)
 
-winter_subset = new_df[['Winer','FIPS']]
+winter_subset = new_df[['Winter','FIPS']]
 winter_subset.loc[:,'FIPS'] = winter_subset.loc[:,'FIPS'].astype(str)
 winter_subset.loc[:,'Winter'] = winter_subset.loc[:,'Winter'].astype(float)
 
