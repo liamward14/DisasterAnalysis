@@ -75,6 +75,18 @@ california.drop(['Declaration Type','Disaster Type'],axis=1,inplace=True)
 '''
 encoded_DF = pd.concat([california,disaster_types_DF,type_DF],axis=1,verify_integrity=True) #concat as columns
 california_encoded = encoded_DF #rename
+print(california_encoded.head())
+
+##Seperate Dates
+dates_df = pd.DataFrame(california_encoded['Declaration Date']).astype(str)
+years = []
+for date in dates_df['Declaration Date']:
+    print(date.split("/"))
+    split_text = date.split("/")
+    row_year = split_text[2]
+    years.append(row_year)
+years_df = pd.DataFrame(years,columns=['Year'])
+print(years_df.head())
 
 
 ##Grab subset containing county and disaster type
@@ -235,40 +247,38 @@ winter_subset.loc[:,'Winter'] = winter_subset.loc[:,'Winter'].astype(float)
 ##plotting with Plotly
 
 #Use USA counties database - easier to plug-n-play with plotly choropleth
-with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-    counties = json.load(response) #for entire country
-
-num_plots = len(new_df.columns)-1
-
-#creat plotly figure object
-fig = px.choropleth(storm_subset, geojson=counties, locations='FIPS', color='Storm',
-                    color_continuous_scale="Viridis",
-                    range_color=storm_range,
-                    labels={'Storm':'Occurences'}
-                    )
-
-#Add title and scale layout
-fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
-                  height=720,
-                  title_text = 'Major Storm Occurences Since 1953')
-
-fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
-#fig.show() #uncomment in order to see the figure
-
-path = r'C:\Users\liamw\PycharmProjects\California\StormMap.html'
-fig.write_html(path) #save as interactive '.html'
-
-##Produce 'Dash' app
-
-app = dash.Dash()
-app.layout = html.Div([
-    dcc.Graph(figure=fig)
-])
-
-app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
-
-time2 = time.time()
-toc = abs(time2-time1)
-print("\nProcessing took {time} seconds".format(time=round(toc,3)))
-
-
+# with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+#     counties = json.load(response) #for entire country
+#
+# num_plots = len(new_df.columns)-1
+#
+# #creat plotly figure object
+# fig = px.choropleth(storm_subset, geojson=counties, locations='FIPS', color='Storm',
+#                     color_continuous_scale="Viridis",
+#                     range_color=storm_range,
+#                     labels={'Storm':'Occurences'}
+#                     )
+#
+# #Add title and scale layout
+# fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
+#                   height=720,
+#                   title_text = 'Major Storm Occurences Since 1953')
+#
+# fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
+# #fig.show() #uncomment in order to see the figure
+#
+# path = r'C:\Users\liamw\PycharmProjects\California\StormMap.html'
+# fig.write_html(path) #save as interactive '.html'
+#
+# ##Produce 'Dash' app
+#
+# app = dash.Dash()
+# app.layout = html.Div([
+#     dcc.Graph(figure=fig)
+# ])
+#
+# app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+#
+# time2 = time.time()
+# toc = abs(time2-time1)
+# print("Processing took {time} seconds".format(time=round(toc,3)))
