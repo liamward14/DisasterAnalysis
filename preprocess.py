@@ -35,6 +35,7 @@ data.columns = ['Declaration Number','Declaration Type','Declaration Date','Stat
                'Public Assistance Program','Hazard Mitigation Program']
 
 california = data[data['State']=='CA'] #Select the state of california
+california_original = data[data['State']=='CA']
 california.reset_index(inplace=True) #reset index
 
 ##Encode 'Declaration Type' columns with '0' or '1'
@@ -86,8 +87,9 @@ for date in labelled_dates_df['Declaration Date']:
     years.append(row_year)
 years_df = pd.DataFrame(years,columns=['Year'])
 year_only_df = pd.concat([california_encoded.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
-year_only_nonencoded_df = pd.concat([california.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
-print(year_only_nonencoded_df.head())
+year_only_nonencoded_df = pd.concat([california_original.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
+
+
 
 ##Isolate 2017 data
 vals_2017 = year_only_df[year_only_df['Year']=='2017']
