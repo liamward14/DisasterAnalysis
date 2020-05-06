@@ -87,9 +87,10 @@ for date in labelled_dates_df['Declaration Date']:
     years.append(row_year)
 years_df = pd.DataFrame(years,columns=['Year'])
 year_only_df = pd.concat([california_encoded.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
-print(year_only_df.info())
 
-labelled_years_df = pd.concat([years_df,california_encoded['Declaration Number']],axis=1,verify_integrity=True)
+##Isolate 2017 data
+vals_2017 = year_only_df[year_only_df['Year']=='2017']
+
 
 
 # df_2017 = labelled_years_df[labelled_years_df['Year']=='2017']
@@ -260,6 +261,30 @@ water_subset.loc[:,'Water'] = water_subset.loc[:,'Water'].astype(float)
 winter_subset = new_df[['Winter','FIPS']]
 winter_subset.loc[:,'FIPS'] = winter_subset.loc[:,'FIPS'].astype(str)
 winter_subset.loc[:,'Winter'] = winter_subset.loc[:,'Winter'].astype(float)
+
+##Create an ordered FIPS Series and append with vals_2017 (see line 92)
+fips_2017 = {}
+dict_ind = 0
+for index in vals_2017.index:
+    prohibited = 'Reservation'
+    county_temp = vals_2017.loc[index,'County']
+    if prohibited in county_temp:
+        pass
+    else:
+        fips_temp = fip_asst_ordered[county_temp]
+        fips_2017[dict_ind] = str(fips_temp)
+        dict_ind+=1
+
+
+fips_2017_df = pd.DataFrame(fips_2017,columns=['FIPS'])
+for key,val in fips_2017.items():
+    fips_2017_df.loc[key] = val #fill FIPS DF - not sure why it isnt working
+print(fips_2017_df)
+final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
+final_2017.dropna(inplace=True) #only one NaN row - shouldnt hurt data too much
+print(final_2017)
+
+
 
 # print(fip_asst_ordered)
 # ##Create 2017 dataset for plotting
