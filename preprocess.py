@@ -317,38 +317,38 @@ In order to get this to work properly, need to take care
 of counties that have two or more disaster types for 1 year
 '''
 #Use USA counties database - easier to plug-n-play with plotly choropleth
-# with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-#     counties = json.load(response) #for entire country
-#
-# num_plots = len(new_df.columns)-1
-#
-# #creat plotly figure object
-# fig = px.choropleth(final_2017.drop([5,32,36]), geojson=counties, locations='FIPS', color='Disaster Type',
-#                     labels='Disaster Type'
-#                     )
-# #the drop above ^ is a temporary fix for multiple values
-#
-# #Add title and scale layout
-# fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
-#                   height=720,
-#                   title_text = 'Major Disasters in 2017')
-#
-# fig.update_geos(fitbounds="locations",
-#                 visible=False,
-#                 showsubunits=True) #zoom in on California
-# #fig.show() #uncomment in order to see the figure
-#
-# path = r'C:\Users\liamw\PycharmProjects\California\Disaster2017Map.html'
-# fig.write_html(path) #save as interactive '.html'
-#
-# ##Produce 'Dash' app
-#
-# app = dash.Dash()
-# app.layout = html.Div([
-#     dcc.Graph(figure=fig)
-# ])
-#
-# app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response) #for entire country
+
+num_plots = len(new_df.columns)-1
+
+#creat plotly figure object
+fig = px.choropleth(final_2017.drop([5,32,36]), geojson=counties, locations='FIPS', color='Disaster Type',
+                    labels='Disaster Type'
+                    )
+#the drop above ^ is a temporary fix for multiple values
+
+#Add title and scale layout
+fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
+                  height=720,
+                  title_text = 'Major Disasters in 2017')
+
+fig.update_geos(fitbounds="locations",
+                visible=False,
+                showsubunits=True) #zoom in on California
+#fig.show() #uncomment in order to see the figure
+
+path = r'C:\Users\liamw\PycharmProjects\California\Disaster2017Map.html'
+fig.write_html(path) #save as interactive '.html'
+
+##Produce 'Dash' app
+
+app = dash.Dash()
+app.layout = html.Div([
+    dcc.Graph(figure=fig)
+])
+
+app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
 
 # print(fip_asst_ordered)
 # ##Create 2017 dataset for plotting
