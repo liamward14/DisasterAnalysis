@@ -8,6 +8,7 @@ Created on Mon May  4 14:25:52 2020
 import time
 
 import pandas as pd
+import numpy as np
 
 time1 = time.time()
 
@@ -285,16 +286,30 @@ fips_2017_df = pd.DataFrame(fips_2017,columns=['FIPS'])
 for key,val in fips_2017.items():
     fips_2017_df.loc[key] = val #fill FIPS DF - not sure why it isnt working
 
+cols_nonencoded = ['Declaration Number','Declaration Type','Declaration Date','State','County',
+               'Disaster Type','Disaster Title','Individual Assistance Program',
+               'Individuals & Households Program',
+               'Public Assistance Program','Hazard Mitigation Program',
+               'Year','FIPS']
 final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
 final_2017.drop(['level_0','index'],inplace=True,axis=1)
-for cty in list(fip_asst_ordered.keys()):
+
+for cty in list(fip_asst_ordered.keys()): #add counties that are not in that year to fill map
     if cty in final_2017['County']:
         pass
     else:
-        row = []
+        row = ['Arb Number','Dec Type','Date','CA',cty,'None','Title','IAP','IHP','PAP','HMP','2017',fip_asst_ordered[cty]]
+        new_row = {}
+        idx = 0
+        for key in cols_nonencoded: #fill dictionary with keys as columns to append to df
+            new_row[key] = row[idx]
+            idx+=1
+        final_2017 = final_2017.append(new_row,ignore_index=True)
+
 
 print(final_2017.head())
 print(final_2017.info())
+
 ##Plotting with plotly for 2017 data
 '''
 In order to get this to work properly, need to take care
