@@ -76,7 +76,6 @@ california.drop(['Declaration Type','Disaster Type'],axis=1,inplace=True)
 encoded_DF = pd.concat([california,disaster_types_DF,type_DF],axis=1,verify_integrity=True) #concat as columns
 california_encoded = encoded_DF #rename
 california_encoded.drop(['index'],axis=1,inplace=True) #remove 'index' column (result of resetting index)
-print(california_encoded.head())
 
 ##Seperate Dates and label
 labelled_dates_df = pd.DataFrame(california_encoded[['Declaration Number','Declaration Date']]).astype(str)
@@ -87,12 +86,13 @@ for date in labelled_dates_df['Declaration Date']:
     years.append(row_year)
 years_df = pd.DataFrame(years,columns=['Year'])
 year_only_df = pd.concat([california_encoded.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
+##Index reset
+california_original.reset_index(inplace=True)
 year_only_nonencoded_df = pd.concat([california_original.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
 
 
-
 ##Isolate 2017 data
-vals_2017 = year_only_df[year_only_df['Year']=='2017']
+vals_2017 = year_only_nonencoded_df[year_only_nonencoded_df['Year']=='2017']
 drop_idx = vals_2017[vals_2017['County']=='Hoopa Valley Indian Reservation'].index.values[0]
 vals_2017.drop(drop_idx,inplace=True)
 
@@ -287,7 +287,6 @@ for key,val in fips_2017.items():
 
 final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
 
-print(final_2017.head())
 
 # print(fip_asst_ordered)
 # ##Create 2017 dataset for plotting
