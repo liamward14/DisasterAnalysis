@@ -295,7 +295,7 @@ final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_inte
 final_2017.drop(['level_0','index'],inplace=True,axis=1)
 
 for cty in list(fip_asst_ordered.keys()): #add counties that are not in that year to fill map
-    if cty in final_2017['County']:
+    if cty in list(final_2017['County'].values):
         pass
     else:
         row = ['Arb Number','Dec Type','Date','CA',cty,'None','Title','IAP','IHP','PAP','HMP','2017',fip_asst_ordered[cty]]
@@ -309,6 +309,7 @@ for cty in list(fip_asst_ordered.keys()): #add counties that are not in that yea
 
 print(final_2017.head())
 print(final_2017.info())
+
 
 ##Plotting with plotly for 2017 data
 '''
