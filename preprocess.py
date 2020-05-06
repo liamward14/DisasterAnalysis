@@ -86,16 +86,24 @@ for date in labelled_dates_df['Declaration Date']:
     row_year = split_text[2]
     years.append(row_year)
 years_df = pd.DataFrame(years,columns=['Year'])
-labelled_years_df = pd.concat([years_df,california_encoded['Declaration Number']],axis=1,verify_integrity=True)
-df_2017 = labelled_years_df[labelled_years_df['Year']=='2017']
-df_2017.sort_values('Declaration Number',inplace=True)
+year_only_df = pd.concat([california_encoded.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
+print(year_only_df.info())
 
-#Organize 2017 data
-vals_2017 = {}
-for index in df_2017.index:
-    entry_data = dict(california_encoded.loc[index])
-    label = entry_data['Declaration Number']
-    vals_2017[label] = entry_data
+labelled_years_df = pd.concat([years_df,california_encoded['Declaration Number']],axis=1,verify_integrity=True)
+
+
+# df_2017 = labelled_years_df[labelled_years_df['Year']=='2017']
+# df_2017.sort_values('Declaration Number',inplace=True)
+#
+# encoded_2017 = california_encoded[california_encoded['Year']=='2017']
+# print(encoded_2017)
+#
+# #Organize 2017 data
+# vals_2017 = {}
+# for index in df_2017.index:
+#     entry_data = dict(california_encoded.loc[index])
+#     label = entry_data['Declaration Number']
+#     vals_2017[label] = entry_data
 
 
 
@@ -253,15 +261,16 @@ winter_subset = new_df[['Winter','FIPS']]
 winter_subset.loc[:,'FIPS'] = winter_subset.loc[:,'FIPS'].astype(str)
 winter_subset.loc[:,'Winter'] = winter_subset.loc[:,'Winter'].astype(float)
 
-print(fip_asst_ordered)
-##Create 2017 dataset for plotting
-for key,val in vals_2017.items():
-    instance = vals_2017[key]
-    for key_inner, val_inner in instance.items():
-        if key_inner=='County':
-           #what is the fips code for this value?
-            county = val_inner
-            fips_code = fip_asst_ordered[county]
+# print(fip_asst_ordered)
+# ##Create 2017 dataset for plotting
+# for key,val in vals_2017.items():
+#     instance = vals_2017[key]
+#     for key_inner, val_inner in instance.items():
+#         if key_inner=='County':
+#            #what is the fips code for this value?
+#             county = val_inner
+#           #  fips_code = fip_asst_ordered[county]
+# print(vals_2017)
 
 ##plotting with Plotly
 
