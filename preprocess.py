@@ -288,6 +288,10 @@ for key,val in fips_2017.items():
 final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
 
 ##Plotting with plotly for 2017 data
+'''
+In order to get this to work properly, need to take care
+of counties that have two or more disaster types for 1 year
+'''
 #Use USA counties database - easier to plug-n-play with plotly choropleth
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
     counties = json.load(response) #for entire country
@@ -295,9 +299,10 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
 num_plots = len(new_df.columns)-1
 
 #creat plotly figure object
-fig = px.choropleth(final_2017, geojson=counties, locations='FIPS', color='Disaster Type',
+fig = px.choropleth(final_2017.drop([5,32,36]), geojson=counties, locations='FIPS', color='Disaster Type',
                     labels='Disaster Type'
                     )
+#the drop above ^ is a temporary fix for multiple values
 
 #Add title and scale layout
 fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
