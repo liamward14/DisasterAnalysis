@@ -90,6 +90,8 @@ year_only_df = pd.concat([california_encoded.drop(['Start Date','End Date','Clos
 
 ##Isolate 2017 data
 vals_2017 = year_only_df[year_only_df['Year']=='2017']
+drop_idx = vals_2017[vals_2017['County']=='Hoopa Valley Indian Reservation'].index.values[0]
+vals_2017.drop(drop_idx,inplace=True)
 
 
 
@@ -279,8 +281,9 @@ for index in vals_2017.index:
 fips_2017_df = pd.DataFrame(fips_2017,columns=['FIPS'])
 for key,val in fips_2017.items():
     fips_2017_df.loc[key] = val #fill FIPS DF - not sure why it isnt working
+
 final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
-final_2017.dropna(inplace=True) #only one NaN row - shouldnt hurt data too much
+#final_2017.dropna(inplace=True) #only one NaN row - shouldnt hurt data too much
 
 print(final_2017[['County','FIPS']]) #verify correctness
 
