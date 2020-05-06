@@ -38,6 +38,8 @@ data.columns = ['Declaration Number','Declaration Type','Declaration Date','Stat
 california = data[data['State']=='CA'] #Select the state of california
 california_original = data[data['State']=='CA']
 california.reset_index(inplace=True) #reset index
+# slider_df = california[['Declaration Number','Declaration Type','Declaration Date','State','County','Disaster Type']]
+# slider_df.dropna(axis=0,inplace=True)
 
 ##Encode 'Declaration Type' columns with '0' or '1'
 '''Disaster==0 and Emergency==1'''
@@ -99,18 +101,18 @@ vals_2017.drop(drop_idx,inplace=True)
 
 
 
-# df_2017 = labelled_years_df[labelled_years_df['Year']=='2017']
-# df_2017.sort_values('Declaration Number',inplace=True)
-#
+df_2017 = year_only_nonencoded_df[year_only_nonencoded_df['Year']=='2017']
+df_2017.sort_values('Declaration Number',inplace=True)
+
 # encoded_2017 = california_encoded[california_encoded['Year']=='2017']
 # print(encoded_2017)
-#
-# #Organize 2017 data
-# vals_2017 = {}
-# for index in df_2017.index:
-#     entry_data = dict(california_encoded.loc[index])
-#     label = entry_data['Declaration Number']
-#     vals_2017[label] = entry_data
+
+#Organize 2017 data
+vals_2017_dict = {}
+for index in df_2017.index:
+    entry_data = dict(california_encoded.loc[index])
+    label = entry_data['Declaration Number']
+    vals_2017_dict[label] = entry_data
 
 
 
@@ -307,8 +309,8 @@ for cty in list(fip_asst_ordered.keys()): #add counties that are not in that yea
         final_2017 = final_2017.append(new_row,ignore_index=True)
 
 
-print(final_2017.head())
-print(final_2017.info())
+#print(final_2017.head())
+#print(final_2017.info())
 
 
 ##Plotting with plotly for 2017 data
@@ -316,41 +318,112 @@ print(final_2017.info())
 In order to get this to work properly, need to take care
 of counties that have two or more disaster types for 1 year
 '''
+
+##Creating a df suitable for a year slider bar
+# fips_all_years_ordered = {}
+# idx = 0 #arbitrary index - will be dropped in concat
+# for cty in list(slider_df['County'].values):
+#     prohibited = 'Reservation'
+#     if prohibited in cty:
+#         pass
+#     else:
+#         current_fips = fip_asst_ordered[cty]
+#         fips_all_years_ordered[idx] = str(current_fips)
+#         idx+=1
+#
+# fips_all_years_Series = pd.Series(fips_all_years_ordered)
+# fips_all_years_Series.name = 'FIPS'
+# fips_all_years_df = pd.DataFrame(fips_all_years_Series,columns=['FIPS'])
+# #all_years_df = pd.concat([slider_df,fips_all_years_df],axis=1,verify_integrity=True)
+# all_years_df = pd.concat([fips_all_years_Series,slider_df.dropna()],axis=1,join='inner')
+# #print(all_years_df.info())
+
+
+
+# years_all = []
+# for date in all_years_df['Declaration Date'].dropna():
+#     split_text = date.split("/")
+#     year = split_text[2]
+#     years_all.append(year)
+#
+# years_sep = pd.DataFrame(years,columns=['Year'])
+#print(all_years_df.info())
+#all_years_final_df = pd.concat([years_sep.dropna(),all_years_df],axis=1,join='inner')
+#print(all_years_final_df.info())
+
+##Add counties without anything to fill map
+
+# print(all_years_final_df.info())
+#
+# cols_nonencoded = ['Year', 'FIPS', 'Declaration Number', 'Declaration Type',
+#        'Declaration Date', 'State', 'County', 'Disaster Type']
+# cty_year_subset = all_years_final_df[['Year','County']]
+# yrs_accounted_for = []
+# yrs = list(cty_year_subset['Year'].values)
+# counties = list(cty_year_subset['County'].values)
+
+
+# for i in yrs:
+#     current_yr_counties = cty_year_subset[cty_year_subset['Year']==i]
+#     for county in fip_asst_ordered.keys():
+#         if county in list(current_yr_counties['County'].values):
+#             pass
+#         else: #county is not accounted for in current year - add row with 'none' type for disaster
+#             row = [str(i), str(fip_asst_ordered[county]),'Arb Number','Arb Type','Arb Date','CA',str(county),'None']
+#             all_years_final_df = all_years_final_df.append(row,ignore_index=True)
+
+
+# for year in list(cty_year_subset['Year'].values):
+#     if year in yrs_accounted_for:
+#         pass
+#     else:
+#         yr_idx = cty_year_subset[cty_year_subset['Year']==year]
+#         yr_idx = yr_idx.index.values[0]
+#         cty = cty_year_subset.loc[yr_idx,'County']
+#         if prohibited not in cty:
+#             row = [str(year),str(fip_asst_ordered[cty]),'Arb Number','Arb Type','Arb Date','CA',str(cty),'None']
+#             new_row = {}
+#             idx = 0
+#             for key in cols_nonencoded: #fill dictionary with keys as columns to append to df
+#                 new_row[key] = row[idx]
+#                 idx+=1
+#             all_years_final_df = all_years_final_df.append(new_row, ignore_index=True)
+#             yrs_accounted_for.append(year)
+
+
 #Use USA counties database - easier to plug-n-play with plotly choropleth
-with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-    counties = json.load(response) #for entire country
+# with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+#     counties = json.load(response) #for entire country
+#
+# print("Processing Dash App...")
+# #creat plotly figure object
+# fig = px.choropleth(all_years_final_df, geojson=counties, locations='FIPS', color='Disaster Type',
+#                     labels='Disaster Type',animation_frame='Year', animation_group='Disaster Type'
+#                     )
+#
+#
+# #Add title and scale layout
+# fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
+#                   height=600,
+#                   title_text = 'Major Disasters in California by Year')
+#
+# fig.update_geos(fitbounds="locations",
+#                 visible=False,
+#                 showsubunits=True) #zoom in on California
+# #fig.show() #uncomment in order to see the figure
+#
+# path = r'C:\Users\liamw\PycharmProjects\California\Disaster2017Map.html'
+# fig.write_html(path) #save as interactive '.html'
+#
+# ##Produce 'Dash' app
+#
+# app = dash.Dash()
+# app.layout = html.Div([
+#     dcc.Graph(figure=fig)
+# ])
+#
+# app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
 
-num_plots = len(new_df.columns)-1
-
-#creat plotly figure object
-fig = px.choropleth(final_2017.drop([5,32,36]), geojson=counties, locations='FIPS', color='Disaster Type',
-                    labels='Disaster Type'
-                    )
-#the drop above ^ is a temporary fix for multiple values
-
-#Add title and scale layout
-fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
-                  height=720,
-                  title_text = 'Major Disasters in 2017')
-
-fig.update_geos(fitbounds="locations",
-                visible=False,
-                showsubunits=True) #zoom in on California
-#fig.show() #uncomment in order to see the figure
-
-path = r'C:\Users\liamw\PycharmProjects\California\Disaster2017Map.html'
-fig.write_html(path) #save as interactive '.html'
-
-##Produce 'Dash' app
-
-app = dash.Dash()
-app.layout = html.Div([
-    dcc.Graph(figure=fig)
-])
-
-app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
-
-# print(fip_asst_ordered)
 # ##Create 2017 dataset for plotting
 # for key,val in vals_2017.items():
 #     instance = vals_2017[key]
@@ -364,37 +437,37 @@ app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Ju
 ##plotting with Plotly
 
 #Use USA counties database - easier to plug-n-play with plotly choropleth
-# with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-#     counties = json.load(response) #for entire country
-#
-# num_plots = len(new_df.columns)-1
-#
-# #creat plotly figure object
-# fig = px.choropleth(storm_subset, geojson=counties, locations='FIPS', color='Storm',
-#                     color_continuous_scale="Viridis",
-#                     range_color=storm_range,
-#                     labels={'Storm':'Occurences'}
-#                     )
-#
-# #Add title and scale layout
-# fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
-#                   height=720,
-#                   title_text = 'Major Storm Occurences Since 1953')
-#
-# fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
-# #fig.show() #uncomment in order to see the figure
-#
-# path = r'C:\Users\liamw\PycharmProjects\California\StormMap.html'
-# fig.write_html(path) #save as interactive '.html'
-#
-# ##Produce 'Dash' app
-#
-# app = dash.Dash()
-# app.layout = html.Div([
-#     dcc.Graph(figure=fig)
-# ])
-#
-# app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response) #for entire country
+
+num_plots = len(new_df.columns)-1
+
+#creat plotly figure object
+fig = px.choropleth(storm_subset, geojson=counties, locations='FIPS', color='Storm',
+                    color_continuous_scale="Viridis",
+                    range_color=storm_range,
+                    labels={'Storm':'Occurences'}
+                    )
+
+#Add title and scale layout
+fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
+                  height=720,
+                  title_text = 'Major Storm Occurences Since 1953')
+
+fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
+#fig.show() #uncomment in order to see the figure
+
+path = r'C:\Users\liamw\PycharmProjects\California\StormMap.html'
+fig.write_html(path) #save as interactive '.html'
+
+##Produce 'Dash' app
+
+app = dash.Dash()
+app.layout = html.Div([
+    dcc.Graph(figure=fig)
+])
+
+app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
 #
 # time2 = time.time()
 # toc = abs(time2-time1)
