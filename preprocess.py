@@ -75,18 +75,28 @@ california.drop(['Declaration Type','Disaster Type'],axis=1,inplace=True)
 '''
 encoded_DF = pd.concat([california,disaster_types_DF,type_DF],axis=1,verify_integrity=True) #concat as columns
 california_encoded = encoded_DF #rename
+california_encoded.drop(['index'],axis=1,inplace=True) #remove 'index' column (result of resetting index)
 print(california_encoded.head())
 
-##Seperate Dates
-dates_df = pd.DataFrame(california_encoded['Declaration Date']).astype(str)
+##Seperate Dates and label
+labelled_dates_df = pd.DataFrame(california_encoded[['Declaration Number','Declaration Date']]).astype(str)
 years = []
-for date in dates_df['Declaration Date']:
-    print(date.split("/"))
+for date in labelled_dates_df['Declaration Date']:
     split_text = date.split("/")
     row_year = split_text[2]
     years.append(row_year)
 years_df = pd.DataFrame(years,columns=['Year'])
-print(years_df.head())
+labelled_years_df = pd.concat([years_df,california_encoded['Declaration Number']],axis=1,verify_integrity=True)
+df_2017 = labelled_years_df[labelled_years_df['Year']=='2017']
+df_2017.sort_values('Declaration Number',inplace=True)
+
+#Organize 2017 data
+vals_2017 = {}
+for index in df_2017.index:
+    entry_data = dict(california_encoded.loc[index])
+    label = entry_data['Declaration Number']
+    vals_2017[label] = entry_data
+
 
 
 ##Grab subset containing county and disaster type
@@ -135,7 +145,6 @@ for key, val in sums.items(): #fill df manually to get the desired form
             pass
         else:
             df.loc[current_county,inner_key] = inner_val #fill df
-
 
 ##Set up cloropleth map and get california counties data (Removed because it takes more time)
 # fname = r'C:\Users\liamw\OneDrive\McMasterUniversity\Machine_Learning\California\ca_counties.geojson'
@@ -187,13 +196,13 @@ for value in outliers:
 FIPS = pd.Series(COUNTYFPS)
 fip_asst = {} #contains associate names of fips codes
 index = 0
-for name in names:
+for name in names: #b/c they are in the same order
     fip_asst[name] = FIPS[index]
     index+=1
 
 #Reorder DataSet and create pandas object for concatenation
 index = 0
-fip_asst_ordered = {}
+fip_asst_ordered = {} #gives FIPS code associated with each county
 for c_name in df.index:
     for label in fip_asst.keys():
         if label==c_name:
@@ -243,6 +252,16 @@ water_subset.loc[:,'Water'] = water_subset.loc[:,'Water'].astype(float)
 winter_subset = new_df[['Winter','FIPS']]
 winter_subset.loc[:,'FIPS'] = winter_subset.loc[:,'FIPS'].astype(str)
 winter_subset.loc[:,'Winter'] = winter_subset.loc[:,'Winter'].astype(float)
+
+print(fip_asst_ordered)
+##Create 2017 dataset for plotting
+for key,val in vals_2017.items():
+    instance = vals_2017[key]
+    for key_inner, val_inner in instance.items():
+        if key_inner=='County':
+           #what is the fips code for this value?
+            county = val_inner
+            fips_code = fip_asst_ordered[county]
 
 ##plotting with Plotly
 
