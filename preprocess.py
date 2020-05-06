@@ -36,7 +36,6 @@ data.columns = ['Declaration Number','Declaration Type','Declaration Date','Stat
 
 california = data[data['State']=='CA'] #Select the state of california
 california.reset_index(inplace=True) #reset index
-california_2017_nonencoded = california[]
 
 ##Encode 'Declaration Type' columns with '0' or '1'
 '''Disaster==0 and Emergency==1'''
@@ -87,6 +86,8 @@ for date in labelled_dates_df['Declaration Date']:
     years.append(row_year)
 years_df = pd.DataFrame(years,columns=['Year'])
 year_only_df = pd.concat([california_encoded.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
+year_only_nonencoded_df = pd.concat([california.drop(['Start Date','End Date','Close Date'],axis=1),years_df],axis=1,verify_integrity=True)
+print(year_only_nonencoded_df.head())
 
 ##Isolate 2017 data
 vals_2017 = year_only_df[year_only_df['Year']=='2017']
@@ -285,40 +286,6 @@ for key,val in fips_2017.items():
 final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
 
 print(final_2017.head())
-
-#Use USA counties database - easier to plug-n-play with plotly choropleth
-with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-    counties = json.load(response) #for entire country
-
-# num_plots = len(new_df.columns)-1
-colors = ['Dam/Levee Break','Drought','Earthquake','Fire','Flood','Hurricane','Other','Storm','Tsunami','Water','Winter']
-#creat plotly figure object
-fig = px.choropleth(final_2017, geojson=counties, locations='FIPS', color=colors,
-                    color_continuous_scale="Viridis",
-                    range_color=(1,5),
-                    #labels={colors:'Occurences'}
-                    )
-
-#Add title and scale layout
-fig.update_layout(margin={"r":0,"t":40,"l":0,"b":40},
-                  height=720,
-                  title_text = 'Major Storm Occurences Since 1953')
-
-fig.update_geos(fitbounds="locations", visible=False) #zoom in on California
-#fig.show() #uncomment in order to see the figure
-
-path = r'C:\Users\liamw\PycharmProjects\California\StormMap.html'
-fig.write_html(path) #save as interactive '.html'
-
-##Produce 'Dash' app
-
-app = dash.Dash()
-app.layout = html.Div([
-    dcc.Graph(figure=fig)
-])
-
-app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
-
 
 # print(fip_asst_ordered)
 # ##Create 2017 dataset for plotting
