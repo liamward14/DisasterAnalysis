@@ -279,11 +279,10 @@ for index in vals_2017.index:
 fips_2017_df = pd.DataFrame(fips_2017,columns=['FIPS'])
 for key,val in fips_2017.items():
     fips_2017_df.loc[key] = val #fill FIPS DF - not sure why it isnt working
-print(fips_2017_df)
 final_2017 = pd.concat([vals_2017.reset_index(),fips_2017_df],axis=1,verify_integrity=True)
 final_2017.dropna(inplace=True) #only one NaN row - shouldnt hurt data too much
-print(final_2017)
 
+print(final_2017[['County','FIPS']]) #verify correctness
 
 
 # print(fip_asst_ordered)
